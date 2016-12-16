@@ -33,11 +33,11 @@ defmodule OneToRuleThemAllBot.CLI do
             response_calls = try_process_update(update, "#{executors_dir}/#{executor}"),
             response_calls do
             for call <- response_calls do
-                if "sendMessage" == call["method"] do
-                    params = Map.merge(call["params"], %{"chat_id": update["message"]["chat"]["id"]})
-                else
-                    params = call["params"]
-                end
+                params =
+                    case call["method"] do
+                        "sendMessage" -> Map.merge(call["params"], %{"chat_id": update["message"]["chat"]["id"]})
+                        _ -> call["params"]
+                    end
                 call_telegram(call["method"], params)
             end
         end
@@ -69,7 +69,8 @@ defmodule OneToRuleThemAllBot.CLI do
 
     defp call_telegram(method, params) do
         {:ok, json_str} = JSON.encode(params)
-        case HTTPoison.post "https://api.telegram.org/bot271510077:AAFJiHZ_yiWsSxz47AxM8M7BwhZOO78okkY/#{method}", json_str, [{"Content-Type", "application/json"}] do
+        token = System.get_env("OTRTAB_TELEGRAM_TOKEN")
+        case HTTPoison.post "https://api.telegram.org/bot#{token}/#{method}", json_str, [{"Content-Type", "application/json"}] do
             {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
                 {:ok, body} = JSON.decode(body)
                 body["result"]
