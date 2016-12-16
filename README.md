@@ -2,5 +2,5 @@
 
 Router for script-based bot
 
- [ ] increase elixirity
- [ ] voice recognition
+ - [ ] increase elixirity
+ - [ ] voice recognition
