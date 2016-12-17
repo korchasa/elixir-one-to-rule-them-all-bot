@@ -1,30 +1,7 @@
 defmodule OneToRuleThemAllBot.CLI do
 
-  def main(args) do
-    parse_args(args)
-    |> process
-  end
-
-  def parse_args(args) do
-    parse = OptionParser.parse(args, switches: [help: :boolean], aliases: [h: :help])
-    case parse do
-      {_, [executors_path], _}
-      ->  Path.absname(executors_path)
-      {_, _, _}
-      -> :help
-    end
-  end
-
-  def process(:help) do
-    IO.puts """
-    One bot to rule them all
-    — — — — —
-    usage: one_to_rule_them_all_bot <executors_dir>
-    example: one_to_rule_them_all_bot ~/executors
-    """
-  end
-
-  def process(executors_dir) do
+  def main([executors_path]) do
+    executors_dir = Path.absname(executors_path)
     IO.puts "Search executors in \"#{executors_dir}\""
     HTTPoison.start
     executors = get_all_executors(executors_dir)
@@ -33,12 +10,12 @@ defmodule OneToRuleThemAllBot.CLI do
     response_calls = try_process_update(update, "#{executors_dir}/#{executor}"),
     response_calls do
       for call <- response_calls do
-        params =
-        case call["method"] do
-          "sendMessage" -> Map.merge(call["params"], %{"chat_id": update["message"]["chat"]["id"]})
-          _ -> call["params"]
-        end
-        call_telegram(call["method"], params)
+        default_params =
+          case call["method"] do
+            "sendMessage" -> %{"chat_id": update["message"]["chat"]["id"]}
+            _             -> %{}
+          end
+        call_telegram(call["method"], Map.merge(call["params"], default_params))
       end
     end
   end
