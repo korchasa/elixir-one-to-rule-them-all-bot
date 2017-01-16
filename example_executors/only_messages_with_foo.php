@@ -8,7 +8,7 @@ if (isset($update['message']['text']) && false !== strpos($update['message']['te
         [
             "method" => "sendMessage",
             "params" => [
-                "text" => "bar",
+                "text" => str_replace('foo', 'bar', $update['message']['text']),
             ]
         ]
     ], JSON_PRETTY_PRINT);

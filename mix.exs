@@ -4,7 +4,7 @@ defmodule OneToRuleThemAllBot.Mixfile do
   def project do
     [app: :one_to_rule_them_all_bot,
      version: "0.1.0",
-     elixir: "~> 1.3",
+     elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      escript: [main_module: OneToRuleThemAllBot.CLI],
@@ -15,7 +15,7 @@ defmodule OneToRuleThemAllBot.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:httpoison]]
+    [applications: [:nadia]]
   end
 
   # Dependencies can be Hex packages:
@@ -28,7 +28,8 @@ defmodule OneToRuleThemAllBot.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-     [{:httpoison, "~> 0.10.0"},
-      {:json, "~> 1.0"}]
+     [
+       {:nadia, github: "korchasa/nadia"}
+     ]
   end
 end
